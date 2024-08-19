@@ -19,6 +19,7 @@
     "express": "^4.19.2",
     "mongoose": "^8.5.3",
     "morgan": "^1.10.0",
-    "playwright": "^1.46.1"
+    "playwright": "^1.46.1",
+    "prom-client": "^15.1.3"
   }
 }
