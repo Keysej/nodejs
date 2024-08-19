@@ -1,35 +1,29 @@
-name: Node.js CI/CD
+name: Node.js CI/CD Pipeline
 
 on:
   push:
     branches:
-      - main  # or master, depending on your default branch
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
+    - uses: actions/checkout@v4
     - name: Set up Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
-        node-version: '20'  # specify your Node.js version
+        node-version: '20'
 
     - name: Install dependencies
-      run: npm install
+      run: npm ci
 
     - name: Run tests
       run: npm test
 
-    - name: Build
-      run: npm run build  # if you have a build step
-
     - name: Deploy
-      env:
-        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-      run: |
-        git remote add heroku https://git.heroku.com/${{ secrets.HEROKU_APP_NAME }}.git
-        git push heroku main
+      run: npm run deploy
