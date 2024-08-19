@@ -1,36 +1,27 @@
 const tf = require('@tensorflow/tfjs');
+const tfnode = require('@tensorflow/tfjs-node');
 
-// Example: A simple function to create a basic model
-function createModel() {
-    const model = tf.sequential();
+let model;
 
-    // Add a dense layer with 1 unit (output) and an input shape matching your input data
-    model.add(tf.layers.dense({ units: 1, inputShape: [1] }));
-
-    // Compile the model with a mean squared error loss function and an Adam optimizer
-    model.compile({ optimizer: 'adam', loss: 'meanSquaredError' });
-
-    return model;
+// Load or create model
+async function createModel() {
+  model = tf.sequential();
+  model.add(tf.layers.dense({ units: 10, activation: 'relu', inputShape: [10] }));
+  model.add(tf.layers.dense({ units: 1, activation: 'linear' }));
+  model.compile({ optimizer: 'adam', loss: 'meanSquaredError' });
+  // Load pre-trained model if available
 }
 
-// Example: Training the model with sample data
-async function trainModel(model, inputs, labels) {
-    const xs = tf.tensor2d(inputs, [inputs.length, 1]);
-    const ys = tf.tensor2d(labels, [labels.length, 1]);
-
-    await model.fit(xs, ys, { epochs: 10 });
-    console.log('Model trained!');
+// Train model
+async function trainModel(data, labels) {
+  await model.fit(tf.tensor2d(data), tf.tensor2d(labels), { epochs: 10 });
 }
 
-// Example: Making predictions with the trained model
-function makePrediction(model, input) {
-    const inputTensor = tf.tensor2d([input], [1, 1]);
-    const prediction = model.predict(inputTensor);
-    return prediction.dataSync()[0];
+// Make predictions
+async function makePrediction(input) {
+  const inputTensor = tf.tensor2d([input], [1, input.length]);
+  const prediction = model.predict(inputTensor);
+  return prediction.arraySync();
 }
 
-module.exports = {
-    createModel,
-    trainModel,
-    makePrediction
-};
+module.exports = { createModel, trainModel, makePrediction };
