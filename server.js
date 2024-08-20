@@ -25,32 +25,41 @@ mongoose.connect(process.env.MONGO_URI)
 
 // Example: AI model setup
 const model = createModel();
+console.log('AI model created');
 
 // Example: Training the model (with mock data)
 const inputs = [1, 2, 3, 4];
 const labels = [1, 3, 5, 7];
 trainModel(model, inputs, labels);
+console.log('AI model trained');
 
 // Scraping Route
 app.post('/scrape', async (req, res) => {
   const { url } = req.body;
 
+  console.log('Received request to /scrape with URL:', url);
+
   if (!url) {
+    console.log('No URL provided');
     return res.status(400).json({ error: 'URL is required' });
   }
 
   try {
     const { chromium } = require('playwright');
     const browser = await chromium.launch({ headless: true });
+    console.log('Browser launched');
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'load', timeout: 60000 });
+    console.log('Navigated to URL:', url);
 
     // Scraping the page title
     const pageTitle = await page.title();
     await browser.close();
+    console.log('Page title scraped:', pageTitle);
 
     // Example: Use the AI model to predict something (this is just a mock example)
     const prediction = makePrediction(model, 5);
+    console.log('AI model prediction:', prediction);
 
     // Respond with scraped data and prediction
     res.json({ title: pageTitle, prediction });
@@ -62,6 +71,7 @@ app.post('/scrape', async (req, res) => {
 
 // Serve index.html for any other routes
 app.get('*', (req, res) => {
+  console.log('Serving index.html for route:', req.path);
   res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
 });
 
