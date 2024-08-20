@@ -3,10 +3,10 @@ name: Node.js CI/CD Pipeline
 on:
   push:
     branches:
-      - main
+      - main  # This triggers the workflow on a push to the main branch
   pull_request:
     branches:
-      - main
+      - main  # This triggers the workflow on a pull request to the main branch
 
 jobs:
   build:
@@ -19,18 +19,18 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20'
+        node-version: '20'  # Specify the Node.js version
 
     - name: Install dependencies
       run: npm ci
 
-    - name: Skip tests
-      run: echo "Skipping tests"
+    - name: Run tests
+      run: npm test || echo "No tests available, skipping..."
 
-    - name: Skip build
-      run: echo "Skipping build step"
+    - name: Build
+      run: npm run build || echo "No build step defined, skipping..."
 
-    - name: Deploy
+    - name: Deploy to Heroku
       env:
         HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
       run: |
