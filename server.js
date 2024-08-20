@@ -21,7 +21,7 @@ app.use(express.static(path.join(__dirname, 'frontend')));
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected'))
-  .catch(err => console.log('MongoDB connection error:', err));
+  .catch(err => console.error('MongoDB connection error:', err));
 
 // Example: AI model setup
 const model = createModel();
@@ -41,9 +41,9 @@ app.post('/scrape', async (req, res) => {
 
   try {
     const { chromium } = require('playwright');
-    const browser = await chromium.launch();
+    const browser = await chromium.launch({ headless: true });
     const page = await browser.newPage();
-    await page.goto(url);
+    await page.goto(url, { waitUntil: 'load', timeout: 60000 });
 
     // Scraping the page title
     const pageTitle = await page.title();
@@ -55,7 +55,7 @@ app.post('/scrape', async (req, res) => {
     // Respond with scraped data and prediction
     res.json({ title: pageTitle, prediction });
   } catch (error) {
-    console.error(error);
+    console.error('Scraping failed:', error);
     res.status(500).json({ error: 'Failed to scrape the website' });
   }
 });
